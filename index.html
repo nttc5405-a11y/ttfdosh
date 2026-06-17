@@ -3,123 +3,222 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>臺東縣消防局－職業安全衛生管理查詢系統demo</title>
+  <title>臺東縣消防局－職業安全衛生管理查詢系統</title>
   <style>
     :root {
-      --primary: #c0392b; --primary-dark: #922b21; --accent: #e67e22;
-      --secondary: #2c3e50; --bg: #f0f2f5; --card-bg: #fff;
-      --text: #2c3e50; --muted: #7f8c8d; --border: #dce1e7;
+      --primary: #c0392b; --primary-dark: #922b21; --primary-light: #fdf2f2;
+      --accent: #e67e22; --secondary: #1e2d40;
+      --bg: #f0f2f5; --card-bg: #fff;
+      --text: #1e2d40; --muted: #64748b; --border: #e2e8f0;
       --p1:#2980b9; --p2:#27ae60; --p3:#8e44ad; --p4:#c0392b;
       --p5:#d35400; --p6:#16a085; --p7:#7d3c98; --p8:#1a5276;
+      --shadow-sm: 0 1px 4px rgba(0,0,0,.08);
+      --shadow-md: 0 4px 14px rgba(0,0,0,.12);
+      --radius: 10px;
     }
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Microsoft JhengHei','微軟正黑體',-apple-system,sans-serif;background:var(--bg);color:var(--text)}
 
-    /* Login overlay */
-    #login-overlay{position:fixed;inset:0;background:linear-gradient(135deg,var(--primary-dark),var(--secondary));z-index:9999;display:flex;align-items:center;justify-content:center}
+    /* ── Login ── */
+    #login-overlay{
+      position:fixed;inset:0;
+      background:linear-gradient(135deg,#7b1a12 0%,#c0392b 45%,#1e2d40 100%);
+      z-index:9999;display:flex;align-items:center;justify-content:center
+    }
     #login-overlay.hidden{display:none}
-    .login-box{background:#fff;border-radius:14px;padding:36px 32px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,.3);text-align:center}
-    .login-logo{font-size:3rem;margin-bottom:8px}
-    .login-title{font-size:1.1rem;font-weight:700;color:var(--secondary);margin-bottom:4px}
-    .login-sub{font-size:.78rem;color:var(--muted);margin-bottom:24px}
-    .login-input-wrap{position:relative;margin-bottom:14px}
-    .login-input-wrap input{width:100%;padding:11px 44px 11px 14px;border:2px solid var(--border);border-radius:8px;font-size:1rem;font-family:inherit;outline:none;letter-spacing:2px;transition:border-color .15s}
-    .login-input-wrap input:focus{border-color:var(--primary)}
-    .toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;color:var(--muted)}
-    .login-btn{width:100%;padding:11px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:.95rem;font-weight:700;font-family:inherit;cursor:pointer;transition:background .15s}
-    .login-btn:hover{background:var(--primary-dark)}
-    .login-btn:disabled{background:#ccc;cursor:not-allowed}
-    .login-msg{margin-top:12px;font-size:.82rem;min-height:20px}
-    .login-msg.err{color:#e74c3c}
-    .login-msg.ok{color:#27ae60}
-    .login-msg.lock{color:#e67e22;font-weight:600}
+    .login-box{
+      background:#fff;border-radius:18px;
+      padding:42px 38px;width:100%;max-width:390px;
+      box-shadow:0 24px 64px rgba(0,0,0,.35);text-align:center;
+    }
+    .login-logo{font-size:3.2rem;margin-bottom:10px;display:block}
+    .login-title{font-size:1.18rem;font-weight:800;color:var(--secondary);margin-bottom:4px;letter-spacing:.5px}
+    .login-sub{font-size:.8rem;color:var(--muted);margin-bottom:30px;line-height:1.65}
+    .login-input-wrap{position:relative;margin-bottom:16px}
+    .login-input-wrap input{
+      width:100%;padding:12px 48px 12px 16px;
+      border:1.5px solid var(--border);border-radius:9px;
+      font-size:1rem;font-family:inherit;outline:none;
+      letter-spacing:3px;transition:border-color .2s,box-shadow .2s;color:var(--text);
+    }
+    .login-input-wrap input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(192,57,43,.12)}
+    .toggle-pw{position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;color:var(--muted)}
+    .login-btn{
+      width:100%;padding:12px;
+      background:var(--primary);color:#fff;border:none;border-radius:9px;
+      font-size:.97rem;font-weight:800;font-family:inherit;
+      cursor:pointer;transition:background .2s,transform .1s;letter-spacing:.5px;
+    }
+    .login-btn:hover{background:var(--primary-dark);transform:translateY(-1px)}
+    .login-btn:active{transform:translateY(0)}
+    .login-btn:disabled{background:#d1d5db;cursor:not-allowed;transform:none}
+    .login-msg{margin-top:14px;font-size:.82rem;min-height:20px}
+    .login-msg.err{color:#e74c3c}.login-msg.ok{color:#27ae60}.login-msg.lock{color:var(--accent);font-weight:600}
 
-    /* Header */
-    header{background:linear-gradient(135deg,var(--primary-dark),var(--primary) 60%,var(--accent));color:#fff;padding:18px 20px 14px}
-    .hd{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:14px}
-    .hd-icon{font-size:38px}
-    .hd h1{font-size:1.3rem;font-weight:700;letter-spacing:.5px}
-    .hd p{font-size:.78rem;opacity:.85;margin-top:3px}
+    /* ── Header ── */
+    header{
+      background:linear-gradient(135deg,var(--primary-dark) 0%,var(--primary) 55%,#e8544a 100%);
+      color:#fff;padding:20px 24px 16px;position:relative;overflow:hidden;
+    }
+    header::after{
+      content:'';position:absolute;inset:0;pointer-events:none;
+      background-image:radial-gradient(circle at 80% 50%,rgba(255,255,255,.06) 0%,transparent 60%);
+    }
+    .hd{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:16px;position:relative}
+    .hd-icon{font-size:44px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))}
+    .hd h1{font-size:1.35rem;font-weight:800;letter-spacing:.3px;text-shadow:0 1px 4px rgba(0,0,0,.2)}
+    .hd p{font-size:.78rem;opacity:.85;margin-top:5px;line-height:1.55}
 
-    /* Search */
-    .sbar{background:var(--secondary);padding:9px 20px;position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.2)}
-    .sbar-in{max-width:1100px;margin:0 auto;display:flex;gap:10px;align-items:center}
-    .sbar input{flex:1;padding:7px 13px;border-radius:6px;border:none;font-size:.88rem;font-family:inherit;background:rgba(255,255,255,.13);color:#fff;outline:none}
-    .sbar input::placeholder{color:rgba(255,255,255,.45)}
-    .sbar input:focus{background:rgba(255,255,255,.2)}
-    #scount{color:rgba(255,255,255,.65);font-size:.76rem;white-space:nowrap;min-width:90px;text-align:right}
+    /* ── Search bar ── */
+    .sbar{
+      background:var(--secondary);padding:10px 24px;
+      position:sticky;top:0;z-index:100;
+      box-shadow:0 3px 10px rgba(0,0,0,.22);
+    }
+    .sbar-in{max-width:1100px;margin:0 auto;display:flex;gap:12px;align-items:center}
+    .sbar input{
+      flex:1;padding:8px 18px;border-radius:22px;
+      border:1.5px solid rgba(255,255,255,.15);
+      font-size:.88rem;font-family:inherit;
+      background:rgba(255,255,255,.1);color:#fff;outline:none;
+      transition:border-color .2s,background .2s;
+    }
+    .sbar input::placeholder{color:rgba(255,255,255,.4)}
+    .sbar input:focus{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4)}
+    #scount{color:rgba(255,255,255,.6);font-size:.76rem;white-space:nowrap;min-width:90px;text-align:right}
 
-    /* Tabs */
-    .tabs{background:#fff;border-bottom:2px solid var(--border);position:sticky;top:44px;z-index:99}
+    /* ── Tabs ── */
+    .tabs{
+      background:#fff;border-bottom:2px solid var(--border);
+      position:sticky;top:46px;z-index:99;
+      box-shadow:0 2px 6px rgba(0,0,0,.05);
+    }
     .tabs-in{max-width:1100px;margin:0 auto;display:flex;overflow-x:auto;scrollbar-width:none}
     .tabs-in::-webkit-scrollbar{display:none}
-    .tab{padding:10px 16px;border:none;background:none;font:600 .84rem/1 inherit;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:4px;transition:color .15s}
+    .tab{
+      padding:11px 18px;border:none;background:none;
+      font:600 .84rem/1 inherit;color:var(--muted);
+      cursor:pointer;border-bottom:3px solid transparent;
+      white-space:nowrap;display:flex;align-items:center;gap:5px;
+      transition:color .15s;
+    }
     .tab:hover{color:var(--primary)}
     .tab.on{color:var(--primary);border-bottom-color:var(--primary)}
-    .badge{font-size:.65rem;font-weight:700;padding:1px 5px;border-radius:10px;background:var(--border);color:var(--muted)}
+    .badge{font-size:.63rem;font-weight:700;padding:2px 6px;border-radius:10px;background:#f0f4f8;color:var(--muted)}
     .tab.on .badge{background:var(--primary);color:#fff}
 
-    /* Main */
-    .main{max-width:1100px;margin:0 auto;padding:18px 14px 48px}
+    /* ── Main ── */
+    .main{max-width:1100px;margin:0 auto;padding:20px 16px 56px}
     .sec{display:none}
     .sec.on{display:block}
 
-    /* Sub-label */
-    .sub-lbl{font-size:.72rem;font-weight:700;letter-spacing:.7px;color:var(--muted);border-left:3px solid var(--primary);padding-left:8px;margin:18px 0 8px;text-transform:uppercase}
+    /* ── Sub-label ── */
+    .sub-lbl{
+      font-size:.7rem;font-weight:800;letter-spacing:1px;color:var(--muted);
+      margin:22px 0 10px;text-transform:uppercase;
+      display:flex;align-items:center;gap:8px;
+    }
+    .sub-lbl::before{
+      content:'';display:inline-block;width:3px;height:14px;
+      background:var(--primary);border-radius:2px;flex-shrink:0;
+    }
 
-    /* File list */
-    .file-list{background:var(--card-bg);border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:0 1px 5px rgba(0,0,0,.05)}
-    .file-row{display:flex;align-items:center;gap:9px;padding:8px 13px;border-bottom:1px solid var(--border);transition:background .12s}
+    /* ── File list ── */
+    .file-list{
+      background:var(--card-bg);border:1px solid var(--border);
+      border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);
+    }
+    .file-row{
+      display:flex;align-items:center;gap:10px;
+      padding:9px 14px;border-bottom:1px solid var(--border);
+      transition:background .12s;
+    }
     .file-row:last-child{border-bottom:none}
-    .file-row:hover{background:#f7f9fb}
+    .file-row:hover{background:#f8f9fb}
     .file-row.hidden{display:none}
-    .fr-icon{font-size:1.05rem;flex-shrink:0;width:20px;text-align:center}
-    .fr-name{flex:1;font-size:.86rem;font-weight:500;line-height:1.35}
-    .fr-name small{display:block;font-size:.71rem;color:var(--muted);font-weight:400;margin-top:1px}
-    .fr-tags{display:flex;gap:3px;flex-shrink:0}
-    .tag{font-size:.62rem;font-weight:700;padding:2px 6px;border-radius:10px;color:#fff;white-space:nowrap}
+    .fr-icon{font-size:1.05rem;flex-shrink:0;width:22px;text-align:center}
+    .fr-name{flex:1;font-size:.86rem;font-weight:500;line-height:1.4}
+    .fr-name small{display:block;font-size:.7rem;color:var(--muted);font-weight:400;margin-top:2px}
+    .fr-tags{display:flex;gap:4px;flex-shrink:0}
+    .tag{font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:10px;color:#fff;white-space:nowrap}
     .t-p1{background:var(--p1)} .t-p2{background:var(--p2)} .t-p3{background:var(--p3)} .t-p4{background:var(--p4)}
     .t-p5{background:var(--p5)} .t-p6{background:var(--p6)} .t-p7{background:var(--p7)} .t-p8{background:var(--p8)}
     .t-ref{background:#e67e22} .t-case{background:#16a085} .t-train{background:#2471a3}
     .t-pdf{background:#e74c3c} .t-word{background:#2b5fad} .t-doc{background:#1a8f6f} .t-folder{background:#f39c12}
-    .fr-link{font-size:1rem;text-decoration:none;color:var(--primary);flex-shrink:0;opacity:.7;transition:opacity .15s,transform .1s;padding:2px 4px}
-    .fr-link:hover{opacity:1;transform:scale(1.15)}
+    .fr-link{
+      font-size:.78rem;font-weight:700;
+      text-decoration:none;color:#fff;
+      background:var(--primary);
+      border-radius:6px;padding:4px 9px;
+      flex-shrink:0;opacity:.88;
+      transition:opacity .15s,transform .1s;
+      display:inline-flex;align-items:center;gap:3px;
+    }
+    .fr-link:hover{opacity:1;transform:translateY(-1px)}
 
-    /* Folder quick cards */
-    .folder-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:9px;margin-bottom:4px}
-    .folder-card{background:var(--card-bg);border:1px solid #f0d9c0;border-radius:8px;padding:10px 13px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,.05);transition:box-shadow .15s,transform .1s}
-    .folder-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.1);transform:translateY(-1px)}
+    /* ── Folder cards ── */
+    .folder-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-bottom:4px}
+    .folder-card{
+      background:var(--card-bg);
+      border:1px solid #f0d9c0;border-left:3px solid var(--accent);
+      border-radius:var(--radius);padding:12px 14px;
+      display:flex;align-items:center;gap:12px;
+      box-shadow:var(--shadow-sm);
+      transition:box-shadow .2s,transform .15s;
+    }
+    .folder-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
     .fc-icon{font-size:1.5rem}
     .fc-body{flex:1}
-    .fc-title{font-size:.86rem;font-weight:600}
-    .fc-desc{font-size:.71rem;color:var(--muted);margin-top:2px}
-    .fc-link{font-size:1.1rem;text-decoration:none;color:var(--primary);opacity:.7;transition:opacity .15s}
+    .fc-title{font-size:.88rem;font-weight:700;color:var(--text)}
+    .fc-desc{font-size:.72rem;color:var(--muted);margin-top:3px}
+    .fc-link{
+      font-size:.78rem;font-weight:700;text-decoration:none;
+      color:#fff;background:var(--primary);
+      border-radius:6px;padding:4px 9px;
+      opacity:.88;transition:opacity .15s;
+    }
     .fc-link:hover{opacity:1}
 
-    /* Sites link card */
-    .sites-card{display:flex;align-items:center;gap:16px;background:#fff;border:2px solid #4285f4;border-radius:10px;padding:18px 20px;text-decoration:none;color:inherit;box-shadow:0 2px 8px rgba(66,133,244,.12);transition:box-shadow .15s,transform .1s;margin-bottom:4px}
-    .sites-card:hover{box-shadow:0 6px 18px rgba(66,133,244,.22);transform:translateY(-2px)}
+    /* ── Sites card ── */
+    .sites-card{
+      display:flex;align-items:center;gap:18px;
+      background:#fff;border:1.5px solid #4285f4;border-radius:12px;
+      padding:20px 22px;text-decoration:none;color:inherit;
+      box-shadow:0 2px 10px rgba(66,133,244,.12);
+      transition:box-shadow .2s,transform .15s;margin-bottom:4px;
+    }
+    .sites-card:hover{box-shadow:0 8px 24px rgba(66,133,244,.22);transform:translateY(-2px)}
     .sites-icon{font-size:2.2rem;flex-shrink:0}
     .sites-body{flex:1}
-    .sites-title{font-size:1rem;font-weight:700;color:#1a73e8;margin-bottom:3px}
-    .sites-url{font-size:.72rem;color:var(--muted);margin-bottom:5px}
-    .sites-desc{font-size:.82rem;color:var(--text);line-height:1.45}
+    .sites-title{font-size:1rem;font-weight:700;color:#1a73e8;margin-bottom:4px}
+    .sites-url{font-size:.72rem;color:var(--muted);margin-bottom:6px}
+    .sites-desc{font-size:.82rem;color:var(--text);line-height:1.5}
     .sites-arrow{font-size:1.4rem;color:#1a73e8;font-weight:700;flex-shrink:0;opacity:.7}
 
-    /* Stats */
-    .stats{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:18px}
-    .stat{background:#fff;border:1px solid var(--border);border-radius:8px;padding:9px 14px;flex:1;min-width:100px;text-align:center}
-    .stat-n{font-size:1.55rem;font-weight:700;color:var(--primary)}
-    .stat-l{font-size:.7rem;color:var(--muted);margin-top:2px}
+    /* ── Stats ── */
+    .stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+    .stat{
+      background:#fff;border:1px solid var(--border);
+      border-top:3px solid var(--primary);
+      border-radius:var(--radius);padding:14px 20px;
+      flex:1;min-width:110px;text-align:center;
+      box-shadow:var(--shadow-sm);
+    }
+    .stat-n{font-size:1.65rem;font-weight:800;color:var(--primary)}
+    .stat-l{font-size:.7rem;color:var(--muted);margin-top:4px}
 
-    /* No results */
-    .nores{display:none;text-align:center;padding:40px;color:var(--muted)}
+    /* ── No results ── */
+    .nores{display:none;text-align:center;padding:48px;color:var(--muted);font-size:.9rem}
     .nores.on{display:block}
 
-    /* Pending row */
+    /* ── Pending ── */
     .row-pending{background:#fffbe6}
 
-    @media(max-width:600px){.hd h1{font-size:1rem}.folder-grid{grid-template-columns:1fr}}
+    @media(max-width:600px){
+      .hd h1{font-size:1rem}
+      .folder-grid{grid-template-columns:1fr}
+      .main{padding:16px 12px 48px}
+    }
   </style>
 </head>
 <body>
@@ -129,7 +228,7 @@
   <div class="login-box">
     <div class="login-logo">🚒</div>
     <div class="login-title">臺東縣消防局</div>
-    <div class="login-sub">職業安全衛生管理查詢系統<br>請輸入驗證碼以繼續...局電話322XXX</div>
+    <div class="login-sub">職業安全衛生管理查詢系統<br>請輸入驗證碼以繼續</div>
     <div class="login-input-wrap">
       <input type="password" id="pw-input" placeholder="請輸入驗證碼" maxlength="20" onkeydown="if(event.key==='Enter')doLogin()">
       <button class="toggle-pw" onclick="togglePw()" title="顯示/隱藏">👁</button>
@@ -143,7 +242,7 @@
   <div class="hd">
     <div class="hd-icon">🚒</div>
     <div>
-      <h1>臺東縣消防局 職業安全衛生管理查詢系統demo</h1>
+      <h1>臺東縣消防局 職業安全衛生管理查詢系統</h1>
       <p>程序書 P1–P8（47份）／ 職安傷亡資料 ／ 教育訓練 ／ 參考文件 — 點 🔗 直接開啟 Google Drive</p>
     </div>
   </div>
@@ -183,17 +282,17 @@
     <div class="folder-card" data-tab="all" data-s="程序書資料夾">
       <div class="fc-icon">📋</div>
       <div class="fc-body"><div class="fc-title">程序書資料夾（全部）</div><div class="fc-desc">SH-P1～P8，共 47 份</div></div>
-      <a class="fc-link" href="https://drive.google.com/drive/folders/1IeT5aobu6aHUIhuO_lfv0swXNSq5YGhx" target="_blank">🔗</a>
+      <a class="fc-link" href="https://drive.google.com/drive/folders/1IeT5aobu6aHUIhuO_lfv0swXNSq5YGhx" target="_blank">開啟 ↗</a>
     </div>
     <div class="folder-card" data-tab="all" data-s="職安傷亡相關資料">
       <div class="fc-icon">🗂️</div>
       <div class="fc-body"><div class="fc-title">職安傷亡相關資料</div><div class="fc-desc">案件資料夾、附件範例</div></div>
-      <a class="fc-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">🔗</a>
+      <a class="fc-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">開啟 ↗</a>
     </div>
     <div class="folder-card" data-tab="all" data-s="根目錄">
       <div class="fc-icon">📁</div>
       <div class="fc-body"><div class="fc-title">根目錄（全部）</div><div class="fc-desc">職安相關（防護小組）</div></div>
-      <a class="fc-link" href="https://drive.google.com/drive/folders/1TCEX7SeHpzYZIRLYEK6GMe1sEO2aoRst" target="_blank">🔗</a>
+      <a class="fc-link" href="https://drive.google.com/drive/folders/1TCEX7SeHpzYZIRLYEK6GMe1sEO2aoRst" target="_blank">開啟 ↗</a>
     </div>
   </div>
 
@@ -212,7 +311,7 @@
       <div class="fr-icon">📕</div>
       <div class="fr-name">程序書彙編 20251210 最終版（590頁）<small>PDF ｜ 17.9 MB</small></div>
       <div class="fr-tags"><span class="tag t-pdf">PDF</span></div>
-      <a class="fr-link" href="https://drive.google.com/file/d/1XMJjovlhdw3AaH91K38N_qST_81e_bOn/view" target="_blank" title="開啟">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/file/d/1XMJjovlhdw3AaH91K38N_qST_81e_bOn/view" target="_blank" title="開啟">開啟 ↗</a>
     </div>
   </div>
 
@@ -222,22 +321,22 @@
     <div class="file-row" data-tab="proc" data-s="SH-P1-001 廳舍設施安全衛生管理程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P1-001 廳舍設施安全衛生管理程序書</div>
       <div class="fr-tags"><span class="tag t-p1">P1</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1u3QK2eh7N3bDYw_-E6vIJeRkcEQB4GOc/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1u3QK2eh7N3bDYw_-E6vIJeRkcEQB4GOc/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P1-002 廳舍設備安全衛生管理程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P1-002 廳舍設備安全衛生管理程序書</div>
       <div class="fr-tags"><span class="tag t-p1">P1</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/18ZwfJifb9WourwNfLHTIHPow3-CtlTY-/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/18ZwfJifb9WourwNfLHTIHPow3-CtlTY-/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P1-003 門禁安全管理程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P1-003 門禁安全管理程序書</div>
       <div class="fr-tags"><span class="tag t-p1">P1</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/138WlcB9afoEW6tfgx0zwkfyj0-VCzMRp/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/138WlcB9afoEW6tfgx0zwkfyj0-VCzMRp/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P1-004 環境衛生管理程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P1-004 環境衛生管理程序書</div>
       <div class="fr-tags"><span class="tag t-p1">P1</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1uf8wejIozbrYwugiU7TpBZby98zsqmYc/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1uf8wejIozbrYwugiU7TpBZby98zsqmYc/view" target="_blank">開啟 ↗</a>
     </div>
   </div>
 
@@ -247,12 +346,12 @@
     <div class="file-row" data-tab="proc" data-s="SH-P2-001 車輛保養 檢修 汰換管理程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P2-001 車輛保養、檢修、汰換管理程序書</div>
       <div class="fr-tags"><span class="tag t-p2">P2</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1MyGKPp8HgTu2A44d86SGQvI78c5hfn86/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1MyGKPp8HgTu2A44d86SGQvI78c5hfn86/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P2-002 駕駛及操作人員管理程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P2-002 駕駛及操作人員管理程序書</div>
       <div class="fr-tags"><span class="tag t-p2">P2</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1bxCCFWZ-vnWZGzJZ4VrRno6frwsM4ybx/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1bxCCFWZ-vnWZGzJZ4VrRno6frwsM4ybx/view" target="_blank">開啟 ↗</a>
     </div>
   </div>
 
@@ -262,12 +361,12 @@
     <div class="file-row" data-tab="proc" data-s="SH-P3-001 教育訓練管理程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P3-001 教育訓練管理程序書</div>
       <div class="fr-tags"><span class="tag t-p3">P3</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/14k-VFYzZe5qttLOVKkvD-NjninH8SKCT/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/14k-VFYzZe5qttLOVKkvD-NjninH8SKCT/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P3-002 教育訓練安全方案管理程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P3-002 教育訓練安全方案管理程序書</div>
       <div class="fr-tags"><span class="tag t-p3">P3</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1Cftsg4_IawcJEDbUm2sJJUny5n8TuOCx/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1Cftsg4_IawcJEDbUm2sJJUny5n8TuOCx/view" target="_blank">開啟 ↗</a>
     </div>
   </div>
 
@@ -277,162 +376,162 @@
     <div class="file-row" data-tab="proc" data-s="SH-P4-001 事故安全官管理程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-001 事故安全官管理程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1Nc8NZspcOkuXW1HclWXqPKNN-uBIL9SN/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1Nc8NZspcOkuXW1HclWXqPKNN-uBIL9SN/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-002 待命出勤安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-002 待命出勤安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1GVCYhNhs0BNX1vbRSByHXpzwUZA8iVol/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1GVCYhNhs0BNX1vbRSByHXpzwUZA8iVol/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-003 車輛行駛時安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-003 車輛行駛時安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1dUXi1l_7pVgaYbPYkXuFrwiDk8LuBf-E/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1dUXi1l_7pVgaYbPYkXuFrwiDk8LuBf-E/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-004 車輛佈署安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-004 車輛佈署安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/11BhgMeMiOXMFpsgajRi6xqMKd8gDKKBd/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/11BhgMeMiOXMFpsgajRi6xqMKd8gDKKBd/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-005 幫浦操作安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-005 幫浦操作安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1zC0tpTS1auSCe8aV7CfjTL-TjXv4BDeV/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1zC0tpTS1auSCe8aV7CfjTL-TjXv4BDeV/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-006 佈線 射水安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-006 佈線、射水安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1UqJMCH0UJ91D42qQY4GwS_LPadZz0_qD/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1UqJMCH0UJ91D42qQY4GwS_LPadZz0_qD/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-007 入室 強力入室 搜救安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-007 入室暨強力入室（屋）搜救安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1rA65yh1AWPSJYI0ekapJoesJ815eFugb/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1rA65yh1AWPSJYI0ekapJoesJ815eFugb/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-008 執行車禍救助安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-008 執行車禍救助安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/17eqUl_yXs673gW0svQnmz4iQedx8cE_j/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/17eqUl_yXs673gW0svQnmz4iQedx8cE_j/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-009 搶救一般 木造 建築物火災安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-009 搶救一般（木造）建築物火災安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/15_30l1Vd6Gt5XCFL1zdqmNwzXNKdszlE/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/15_30l1Vd6Gt5XCFL1zdqmNwzXNKdszlE/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-010 搶救高層建築物火災安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-010 搶救高層建築物火災安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1C3wNlDSTA572hL_0EuOfiJ597c6-b0aa/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1C3wNlDSTA572hL_0EuOfiJ597c6-b0aa/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-011 搶救地下空間 場域 火災安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-011 搶救地下空間（場域）火災安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1in8DeUHhwCqsL4Pi0AQtzHiz810vd1Uj/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1in8DeUHhwCqsL4Pi0AQtzHiz810vd1Uj/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-012 搶救輕量型鋼結構建築物火災安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-012 搶救輕量型鋼結構建築物火災安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1njT1owa5NeUFt35kA2EuC6-xAlecdK-6/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1njT1owa5NeUFt35kA2EuC6-xAlecdK-6/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-013 搶救化學事故場域 含運輸車輛 火災安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-013 搶救化學事故場域（含運輸車輛）火災安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1ASy16YkwBG2ZG-7dJ7db5J_2anGpJgoq/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1ASy16YkwBG2ZG-7dJ7db5J_2anGpJgoq/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-014 資源回收場火災安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-014 資源回收場火災安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1nAlxlMrNjfaGRCygopiruCS45wU_n5_7/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1nAlxlMrNjfaGRCygopiruCS45wU_n5_7/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-015 搶救太陽光電發電設備場所安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-015 搶救太陽光電發電設備場所安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1xgEb8x7EG84tCPqTbBO07szIwyFVMl7B/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1xgEb8x7EG84tCPqTbBO07szIwyFVMl7B/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-016 搶救電動車與儲能系統安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-016 搶救電動車與儲能系統安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1E2eAHYf9mmKlR2_M-_EJK3tVAn1dWvQM/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1E2eAHYf9mmKlR2_M-_EJK3tVAn1dWvQM/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-017 搶救山林火災安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-017 搶救山林火災安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1cCpN0LeXNnPlEv_q-h-9nwOuqOB9Oujj/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1cCpN0LeXNnPlEv_q-h-9nwOuqOB9Oujj/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-018 搶救瓦斯災害安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-018 搶救瓦斯災害安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1tlpRzizM2D0seZdvUK6sDD_6Ab3MRH8S/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1tlpRzizM2D0seZdvUK6sDD_6Ab3MRH8S/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-019 搶救長公路隧道火災安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-019 搶救長公路隧道火災安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1oK-87RWOPb6n3TV8GxmS7OvdXqAWbPVL/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1oK-87RWOPb6n3TV8GxmS7OvdXqAWbPVL/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-020 搶救船舶火災安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-020 搶救船舶火災安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1AnWFivVjHiojgrfNsEM4gYHxXY4E7SFg/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1AnWFivVjHiojgrfNsEM4gYHxXY4E7SFg/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-021 侷限空間救援安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-021 侷限空間救援安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1O1r9KLcYxwDSgy_9hY4hfMunA6p3ralQ/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1O1r9KLcYxwDSgy_9hY4hfMunA6p3ralQ/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-022 水域救援安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-022 水域救援安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1uYpUz-TKxivI5lZwYheJxFo7VCODeYl0/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1uYpUz-TKxivI5lZwYheJxFo7VCODeYl0/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-023 觸電 感電 救援安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-023 觸（感）電救援安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1xGZofNJ_cYveiUXCllf99goTWZrRb55L/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1xGZofNJ_cYveiUXCllf99goTWZrRb55L/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-024 山域事故搜救安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-024 山域事故搜救安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/14SeMWH5EI43SCFwgukVCGENqn9uw39Ys/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/14SeMWH5EI43SCFwgukVCGENqn9uw39Ys/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-025 直升機共勤救災安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-025 直升機共勤救災安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1ax_D_UZcBMhW--4c_TbZR-oW_axWjyKv/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1ax_D_UZcBMhW--4c_TbZR-oW_axWjyKv/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-026 核生化災害 恐怖攻擊 戰時消防搶救安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-026 核生化災害初期、恐怖攻擊、戰時消防搶救安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1r-7RZ-XE7kdASJY63c2tnS_mrg_f0mEe/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1r-7RZ-XE7kdASJY63c2tnS_mrg_f0mEe/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-027 使用空氣呼吸器安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-027 使用空氣呼吸器安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/16DqY_8YLvJotwdLjMr26YRB2JMbD84MO/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/16DqY_8YLvJotwdLjMr26YRB2JMbD84MO/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-028 特種車輛操作安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-028 特種車輛操作安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1hGrc71jXP9FHb7eUYAhv1c6nor-8_0__/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1hGrc71jXP9FHb7eUYAhv1c6nor-8_0__/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-029 消防梯操作安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-029 消防梯操作安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1uVeqhf7XTN48lnaLkrm_HPUeEmgW1xk3/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1uVeqhf7XTN48lnaLkrm_HPUeEmgW1xk3/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-030 操作各式常用破壞器材安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-030 操作各式常用破壞器材安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1FWmuhaLqol3MSHNiZrDQ59_TuuydjpWB/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1FWmuhaLqol3MSHNiZrDQ59_TuuydjpWB/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-031 操作各種繩索安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-031 操作各種繩索安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1aFPSTVzIhHBc6bYmX489RTxFHPGPnS7Z/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1aFPSTVzIhHBc6bYmX489RTxFHPGPnS7Z/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P4-032 各式船艇操作安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P4-032 各式船艇操作安全程序書</div>
       <div class="fr-tags"><span class="tag t-p4">P4</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1LKlRkZb4KcMu2oD7AYyrsv9DQpdfhr4e/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1LKlRkZb4KcMu2oD7AYyrsv9DQpdfhr4e/view" target="_blank">開啟 ↗</a>
     </div>
   </div>
 
@@ -442,17 +541,17 @@
     <div class="file-row" data-tab="proc" data-s="SH-P5-001 救護勤務安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P5-001 救護勤務安全程序書</div>
       <div class="fr-tags"><span class="tag t-p5">P5</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1H_0dmhVUfRvx2cBRwnXKnQDinpsZ-CQl/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1H_0dmhVUfRvx2cBRwnXKnQDinpsZ-CQl/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P5-002 傳染病救護安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P5-002 傳染病救護安全程序書</div>
       <div class="fr-tags"><span class="tag t-p5">P5</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1JTL467NGt_FBc4851KIKd89JpBwyzMrx/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1JTL467NGt_FBc4851KIKd89JpBwyzMrx/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P5-003 化學及輻射汙染傷患救護安全程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P5-003 化學及輻射汙染傷患救護安全程序書</div>
       <div class="fr-tags"><span class="tag t-p5">P5</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1eJK75zfDw7TldgX-So3t7QkoB7lyzQdX/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1eJK75zfDw7TldgX-So3t7QkoB7lyzQdX/view" target="_blank">開啟 ↗</a>
     </div>
   </div>
 
@@ -462,7 +561,7 @@
     <div class="file-row" data-tab="proc" data-s="SH-P6-001 體格與身體條件管理程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P6-001 體格與身體條件管理程序書</div>
       <div class="fr-tags"><span class="tag t-p6">P6</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1IVo53VVvyB9RKTylleRFAi6V3B0VwPjL/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1IVo53VVvyB9RKTylleRFAi6V3B0VwPjL/view" target="_blank">開啟 ↗</a>
     </div>
   </div>
 
@@ -472,12 +571,12 @@
     <div class="file-row" data-tab="proc" data-s="SH-P7-001 火災調查工作管理程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P7-001 火災調查工作管理程序書</div>
       <div class="fr-tags"><span class="tag t-p7">P7</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1_vuNE5LvtyNxKIErlVgkFJWNgoJZZ37v/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1_vuNE5LvtyNxKIErlVgkFJWNgoJZZ37v/view" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="proc" data-s="SH-P7-002 消防安全檢查工作管理程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P7-002 消防安全檢查工作管理程序書</div>
       <div class="fr-tags"><span class="tag t-p7">P7</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1MG869vCQOVfe9izEQV_WZeGI0kCGRlLi/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1MG869vCQOVfe9izEQV_WZeGI0kCGRlLi/view" target="_blank">開啟 ↗</a>
     </div>
   </div>
 
@@ -487,7 +586,7 @@
     <div class="file-row" data-tab="proc" data-s="SH-P8-001 人因性危害預防管理程序書">
       <div class="fr-icon">📄</div><div class="fr-name">SH-P8-001 人因性危害預防管理程序書</div>
       <div class="fr-tags"><span class="tag t-p8">P8</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/1VTzXrb3wqOE8bOGgpuZU0SzHEjAg_Bk8/view" target="_blank">🔗</a>
+      <a class="fr-link" href="https://docs.google.com/document/d/1VTzXrb3wqOE8bOGgpuZU0SzHEjAg_Bk8/view" target="_blank">開啟 ↗</a>
     </div>
   </div>
 
@@ -512,55 +611,67 @@
       <div class="fr-icon">📁</div>
       <div class="fr-name">08－事故調查報告（簽准後上傳綜安科雲端）<small>簽准後統一上傳至此資料夾</small></div>
       <div class="fr-tags"><span class="tag t-case">調查報告</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/1CN5tnRh61PH-jm7u6_UsBP7qWHt8zfD-" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/1CN5tnRh61PH-jm7u6_UsBP7qWHt8zfD-" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="cases" data-s="000 嚴重事故 消防員受傷 保訓會通報表 115">
       <div class="fr-icon">📁</div>
       <div class="fr-name">000－嚴重事故需另填保訓會通報表<small>115.02.13 人事室簽文</small></div>
       <div class="fr-tags"><span class="tag t-p4">嚴重</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/1iOSuYUvt7HDHqhzLxwmglfoqb_IvF_62" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/1iOSuYUvt7HDHqhzLxwmglfoqb_IvF_62" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="cases" data-s="114.09.14 義消 山訓摔傷 114.09.16 警義消 雜草火警蜂螫">
       <div class="fr-icon">📁</div>
       <div class="fr-name">114.09.14 義消山訓摔傷及 114.09.16 警義消雜草火警蜂螫案<small>簽准存查</small></div>
       <div class="fr-tags"><span class="tag t-case">114</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/1wISsguZsuTSoOMG0OM5S9uQrTtraw_hW" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/1wISsguZsuTSoOMG0OM5S9uQrTtraw_hW" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="cases" data-s="114.12.07 成功鎮 麒麟路 車禍救護 幾近錯誤 Near Miss">
       <div class="fr-icon">📁</div>
       <div class="fr-name">114.12.07 成功鎮麒麟路12號車禍救護－幾近錯誤事件（Near Miss）<small>簽准存查</small></div>
       <div class="fr-tags"><span class="tag t-case">Near Miss</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/1CoSAJCf2gDZUX3Hj82gHki9KUQIXFKlv" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/1CoSAJCf2gDZUX3Hj82gHki9KUQIXFKlv" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="cases" data-s="115.01.16 救護訓練受傷 職安案件">
       <div class="fr-icon">📁</div>
       <div class="fr-name">115.01.16 救護訓練受傷職安案件</div>
       <div class="fr-tags"><span class="tag t-case">115</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/13NhtkCvH-yXPRMoyxTl0EnPLlnTRhyre" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/13NhtkCvH-yXPRMoyxTl0EnPLlnTRhyre" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="cases" data-s="115.01.19 新社三街火災">
       <div class="fr-icon">📁</div>
       <div class="fr-name">115.01.19 新社三街火災</div>
       <div class="fr-tags"><span class="tag t-case">115</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/12E0A52oFOVDDTh-tnF44Ew9LWT6OiVrd" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/12E0A52oFOVDDTh-tnF44Ew9LWT6OiVrd" target="_blank">開啟 ↗</a>
     </div>
-    <div class="file-row" data-tab="cases" data-s="1140725 事故調查分級分層機制執行計畫 Google Doc">
+    <div class="file-row" data-tab="cases" data-s="115.05.01 事故調查分級分層機制執行計畫 二版 現行版本 PDF">
+      <div class="fr-icon">📋</div>
+      <div class="fr-name">115.05.01 臺東縣消防局事故調查分級分層機制執行計畫－第二版<small>PDF ｜ 現行版本</small></div>
+      <div class="fr-tags"><span class="tag t-p4">現行</span><span class="tag t-pdf">PDF</span></div>
+      <a class="fr-link" href="https://drive.google.com/file/d/1hkXOXZ1rINVF6R3_cT9K3hnSqjoxvQ8i/view" target="_blank">開啟 ↗</a>
+    </div>
+    <div class="file-row" data-tab="cases" data-s="115.05.01 事故調查計畫 第二版 修正對照表 xlsx">
+      <div class="fr-icon">📊</div>
+      <div class="fr-name">115.05.01 臺東縣消防局事故調查計畫第二版修正對照表<small>Excel ｜ 新舊條文對照</small></div>
+      <div class="fr-tags"><span class="tag t-p4">對照表</span><span class="tag" style="background:#1d6f42">Excel</span></div>
+      <a class="fr-link" href="https://drive.google.com/file/d/1-GbCPwQ3W3VislFUdBmT6g-OgpTFQcsL/view" target="_blank">開啟 ↗</a>
+    </div>
+    <div class="file-row" data-tab="cases" data-s="1140725 事故調查分級分層機制執行計畫 Google Doc 初版">
       <div class="fr-icon">📝</div>
-      <div class="fr-name">1140725 臺東縣消防局消防人員事故調查分級分層機制執行計畫<small>Google 文件</small></div>
-      <div class="fr-tags"><span class="tag t-doc">Doc</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/19u3ukObTRGUondNMUw3xECJXI3dbIIloNnvMk3UerRw/edit" target="_blank">🔗</a>
+      <div class="fr-name">114.07.25 臺東縣消防局消防人員事故調查分級分層機制執行計畫<small>Google 文件｜初版（已由 115.05.01 二版取代）</small></div>
+      <div class="fr-tags"><span class="tag" style="background:#95a5a6">初版</span><span class="tag t-doc">Doc</span></div>
+      <a class="fr-link" href="https://docs.google.com/document/d/19u3ukObTRGUondNMUw3xECJXI3dbIIloNnvMk3UerRw/edit" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="cases" data-s="各級事故處理流程 管制用 PDF">
       <div class="fr-icon">📊</div>
       <div class="fr-name">各級事故處理流程－管制用<small>PDF ｜ 815 KB</small></div>
       <div class="fr-tags"><span class="tag t-pdf">PDF</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="cases" data-s="權責分工表 PNG">
       <div class="fr-icon">🖼️</div>
       <div class="fr-name">權責分工表<small>PNG ｜ 161 KB</small></div>
       <div class="fr-tags"><span class="tag" style="background:#95a5a6">圖片</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">開啟 ↗</a>
     </div>
   </div>
 
@@ -569,32 +680,32 @@
     <div class="file-row" data-tab="cases" data-s="附件一 台東縣消防局 事件案件表 範例 docx">
       <div class="fr-icon">📄</div><div class="fr-name">附件一－台東縣消防局事件案件表（範例）<small>Word ｜ 14 KB</small></div>
       <div class="fr-tags"><span class="tag t-ref">附件一</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="cases" data-s="附件一 火災搶救報告書 範例 DOC PDF">
       <div class="fr-icon">📄</div><div class="fr-name">附件一：火災搶救報告書（範例）<small>DOC 124KB ／ PDF 494KB</small></div>
       <div class="fr-tags"><span class="tag t-ref">附件一</span><span class="tag t-word">Word</span><span class="tag t-pdf">PDF</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="cases" data-s="附件二 OO縣市 消防局救災人員傷亡 範例">
       <div class="fr-icon">📄</div><div class="fr-name">附件二：消防局救災人員傷亡表（範例）<small>Word 33KB ／ PDF 348KB</small></div>
       <div class="fr-tags"><span class="tag t-ref">附件二</span><span class="tag t-word">Word</span><span class="tag t-pdf">PDF</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="cases" data-s="附件三 OO縣市 消防局救災車輛事故 範例">
       <div class="fr-icon">📄</div><div class="fr-name">附件三：消防局救災車輛事故表（範例）<small>Word 29KB ／ PDF 344KB</small></div>
       <div class="fr-tags"><span class="tag t-ref">附件三</span><span class="tag t-word">Word</span><span class="tag t-pdf">PDF</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="cases" data-s="附件 災害事故調查會議紀錄 範例">
       <div class="fr-icon">📄</div><div class="fr-name">附件－災害事故調查會議紀錄（範例）<small>Word ｜ 44 KB</small></div>
       <div class="fr-tags"><span class="tag t-ref">附件</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="cases" data-s="附件 災害事故調查會議照片 範例">
       <div class="fr-icon">📄</div><div class="fr-name">附件－災害事故調查會議照片（範例）<small>Word ｜ 3.9 MB</small></div>
       <div class="fr-tags"><span class="tag t-ref">附件</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">開啟 ↗</a>
     </div>
   </div>
 </div>
@@ -606,19 +717,19 @@
       <div class="fr-icon">📕</div>
       <div class="fr-name">「消防人員安全衛生教育訓練實施規則」書表格式<small>PDF</small></div>
       <div class="fr-tags"><span class="tag t-train">訓練</span><span class="tag t-pdf">PDF</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/1TCEX7SeHpzYZIRLYEK6GMe1sEO2aoRst" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/1TCEX7SeHpzYZIRLYEK6GMe1sEO2aoRst" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="train" data-s="115年教育訓練課程表 PDF">
       <div class="fr-icon">📅</div>
       <div class="fr-name">115年教育訓練課程表<small>PDF</small></div>
       <div class="fr-tags"><span class="tag t-train">訓練</span><span class="tag t-pdf">PDF</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/1TCEX7SeHpzYZIRLYEK6GMe1sEO2aoRst" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/1TCEX7SeHpzYZIRLYEK6GMe1sEO2aoRst" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="train" data-s="SH-P3-001 教育訓練管理程序書 1140910">
       <div class="fr-icon">📄</div>
       <div class="fr-name">SH-P3-001 教育訓練管理程序書（114.09.10 版）<small>Word ｜ 380 KB</small></div>
       <div class="fr-tags"><span class="tag t-p3">P3</span><span class="tag t-word">Word</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/1TCEX7SeHpzYZIRLYEK6GMe1sEO2aoRst" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/1TCEX7SeHpzYZIRLYEK6GMe1sEO2aoRst" target="_blank">開啟 ↗</a>
     </div>
   </div>
 </div>
@@ -626,29 +737,41 @@
 <!-- ══════════ 參考文件 ══════════ -->
 <div class="sec" id="tab-refs">
   <div class="file-list">
-    <div class="file-row" data-tab="refs" data-s="1140725 事故調查分級分層機制執行計畫 Google Doc">
+    <div class="file-row" data-tab="refs" data-s="115.05.01 事故調查分級分層機制執行計畫 二版 現行版本 PDF">
+      <div class="fr-icon">📋</div>
+      <div class="fr-name">115.05.01 臺東縣消防局事故調查分級分層機制執行計畫－第二版<small>PDF ｜ 現行版本</small></div>
+      <div class="fr-tags"><span class="tag t-p4">現行</span><span class="tag t-pdf">PDF</span></div>
+      <a class="fr-link" href="https://drive.google.com/file/d/1hkXOXZ1rINVF6R3_cT9K3hnSqjoxvQ8i/view" target="_blank">開啟 ↗</a>
+    </div>
+    <div class="file-row" data-tab="refs" data-s="115.05.01 事故調查計畫 第二版 修正對照表 xlsx">
+      <div class="fr-icon">📊</div>
+      <div class="fr-name">115.05.01 臺東縣消防局事故調查計畫第二版修正對照表<small>Excel ｜ 新舊條文對照</small></div>
+      <div class="fr-tags"><span class="tag t-p4">對照表</span><span class="tag" style="background:#1d6f42">Excel</span></div>
+      <a class="fr-link" href="https://drive.google.com/file/d/1-GbCPwQ3W3VislFUdBmT6g-OgpTFQcsL/view" target="_blank">開啟 ↗</a>
+    </div>
+    <div class="file-row" data-tab="refs" data-s="1140725 事故調查分級分層機制執行計畫 Google Doc 初版">
       <div class="fr-icon">📝</div>
-      <div class="fr-name">1140725 臺東縣消防局消防人員事故調查分級分層機制執行計畫<small>Google 文件</small></div>
-      <div class="fr-tags"><span class="tag t-doc">Doc</span></div>
-      <a class="fr-link" href="https://docs.google.com/document/d/19u3ukObTRGUondNMUw3xECJXI3dbIIloNnvMk3UerRw/edit" target="_blank">🔗</a>
+      <div class="fr-name">114.07.25 臺東縣消防局消防人員事故調查分級分層機制執行計畫<small>Google 文件｜初版（已由 115.05.01 二版取代）</small></div>
+      <div class="fr-tags"><span class="tag" style="background:#95a5a6">初版</span><span class="tag t-doc">Doc</span></div>
+      <a class="fr-link" href="https://docs.google.com/document/d/19u3ukObTRGUondNMUw3xECJXI3dbIIloNnvMk3UerRw/edit" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="refs" data-s="114.08.04 公文 消防人員事故調查分級分層 PDF">
       <div class="fr-icon">📜</div>
       <div class="fr-name">114.08.04（公文）本局消防人員事故調查分級分層機制<small>PDF ｜ 179 KB</small></div>
       <div class="fr-tags"><span class="tag t-ref">公文</span><span class="tag t-pdf">PDF</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="refs" data-s="各級事故處理流程 管制用 PDF">
       <div class="fr-icon">📊</div>
       <div class="fr-name">各級事故處理流程－管制用<small>PDF ｜ 815 KB</small></div>
       <div class="fr-tags"><span class="tag t-ref">流程圖</span><span class="tag t-pdf">PDF</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">開啟 ↗</a>
     </div>
     <div class="file-row" data-tab="refs" data-s="權責分工表 PNG 圖片">
       <div class="fr-icon">🖼️</div>
       <div class="fr-name">權責分工表<small>PNG ｜ 161 KB</small></div>
       <div class="fr-tags"><span class="tag t-ref">分工表</span></div>
-      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">🔗</a>
+      <a class="fr-link" href="https://drive.google.com/drive/folders/1CkcVWSPeX3ww3b8ImmG2A4wR68ieIFhj" target="_blank">開啟 ↗</a>
     </div>
   </div>
 </div>
